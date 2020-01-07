@@ -13,7 +13,9 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name=".service.CallAplication"
+        >
         <activity
             android:name=".MainActivity"
             android:label="NEAR">
@@ -24,6 +26,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".mpchar.BarChartActivity"></activity>
+        <service android:name=".service.NotifyService"></service>
     </application>
 
 </manifest>

@@ -22,4 +22,6 @@ public class Contact {
     private int mImageId;
     //最近是否通话
     public int mLevel = 0;// 0 未通话 1 最近两天 2 今天刚刚
+    //是否触发提醒
+    public boolean isNotify= false;
 }

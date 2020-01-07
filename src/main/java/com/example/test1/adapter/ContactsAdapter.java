@@ -2,7 +2,9 @@ package com.example.test1.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
+import android.provider.CallLog;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 
 import com.example.test1.Notes;
 import com.example.test1.R;
+import com.example.test1.call.bean.Calllog;
 import com.example.test1.call.bean.Contact;
 
 import java.text.SimpleDateFormat;
@@ -64,15 +67,25 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final Contact contact = mContactList.get(position);
-
+        if (contact.mCalllogs.size()>0){
+            Calllog log = contact.mCalllogs.get(0);
+            holder.contactOutCall.setText(log.mDate);
+        }
         holder.contactName.setText(contact.mName);
-        holder.contactOutCall.setText("去电"+contact.mOutGoingNum+"次");
-        holder.contactInCall.setText("来电"+contact.mIncomingNum+"次");
-        holder.contactMissCall.setText("未接听"+contact.mMissNum+"次");
+//        holder.contactOutCall.setText("去电"+contact.mOutGoingNum+"次");
+//        holder.contactInCall.setText("来电"+contact.mIncomingNum+"次");
+//        holder.contactMissCall.setText("未接听"+contact.mMissNum+"次");
 
-        String notify = getNotify(contact);
+        if (contact.isNotify){
+            String notify = "好久没联系了，快联系我吧！";
+            holder.contactNotify.setText(notify);
+            holder.contactNotify.setTextColor(Color.RED);
+        }else{
+            String notify = getNotify(contact);
+            holder.contactNotify.setText(notify);
+            holder.contactNotify.setTextColor(Color.BLACK);
+        }
 
-        holder.contactNotify.setText(notify);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

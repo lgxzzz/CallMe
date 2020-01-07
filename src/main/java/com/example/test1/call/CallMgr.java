@@ -2,12 +2,16 @@ package com.example.test1.call;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.util.Log;
 
+import com.example.test1.Constant;
 import com.example.test1.call.bean.Calllog;
 import com.example.test1.call.bean.Contact;
 
@@ -21,6 +25,9 @@ import static android.icu.text.DateTimePatternGenerator.DAY;
 
 public class CallMgr {
     public static final String TAG = "CallMgr";
+
+    public static CallMgr instance;
+
     public Context mContext;
     //所有联系人记录
     public List<Contact> mContacts = new ArrayList<>();
@@ -38,6 +45,11 @@ public class CallMgr {
 
     public CallMgr(Context mContext){
         this.mContext = mContext;
+        this.instance = this;
+    }
+
+    public static CallMgr getInstance() {
+         return instance;
     }
 
     //初始化数据
@@ -45,6 +57,7 @@ public class CallMgr {
         mContacts.clear();
         loadAllContacts();
         loadAllLogs();
+        taskNotify();
         mListener.onFinish();
     }
 
@@ -206,5 +219,71 @@ public class CallMgr {
 
     public void setmListener(ILoadCallogFinishListener mListener){
         this.mListener = mListener;
+    }
+
+
+    public static final int MSG_CHECK =0;
+
+    private Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            switch (msg.what){
+                case MSG_CHECK:
+                    checkContact();
+                    break;
+            }
+            return false;
+        }
+    });
+
+    //模拟两小时无电话联系，发送提醒
+    public void taskNotify(){
+        mHandler.removeMessages(MSG_CHECK);
+        mHandler.sendEmptyMessageDelayed(MSG_CHECK,1000*10);
+    }
+
+    //轮训检测联系人是否没有联系
+    public void checkContact(){
+        boolean flag = false;
+        for (int i=0;i<mContacts.size();i++){
+            Contact contact = mContacts.get(i);
+            if (isLongTime(contact)){
+               flag = true;
+               break;
+            }
+        }
+        if (flag){
+            sendBoadcastToNotify();
+        }
+        taskNotify();
+    }
+
+    //是否超时
+    public boolean isLongTime(Contact contact){
+        if (contact.mCalllogs.size()>0){
+            Calllog log = contact.mCalllogs.get(0);
+            String dayCurrent = new SimpleDateFormat("dd").format(new Date());
+            String dayRecord = new SimpleDateFormat("dd").format(new Date(log.mDateLong));
+            if ((Integer.parseInt(dayCurrent)) == (Integer.parseInt(dayRecord))) {
+                //今天
+                contact.isNotify = true;
+            } else if ((Integer.parseInt(dayCurrent) - 1) == (Integer.parseInt(dayRecord))) {
+                //昨天
+                contact.isNotify = true;
+            } else {
+                //前天
+                contact.isNotify = true;
+                return true;
+            }
+        }
+
+        return true;
+    }
+
+    //发送广播通知
+    public void sendBoadcastToNotify(){
+        Intent intent = new Intent();
+        intent.setAction(Constant.TEST_NOTIFY);
+        mContext.sendBroadcast(intent);
     }
 }

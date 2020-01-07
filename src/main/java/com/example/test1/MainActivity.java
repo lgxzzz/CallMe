@@ -3,7 +3,10 @@ package com.example.test1;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -27,6 +30,7 @@ import android.widget.Toast;
 import com.example.test1.adapter.ContactsAdapter;
 import com.example.test1.call.CallMgr;
 import com.example.test1.mpchar.BarChartActivity;
+import com.example.test1.service.NotifyService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ContactsAdapter mAapter;
     private CallMgr mCallMgr;
+    private RecyclerView recyclerView_peoples;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,25 +89,41 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        mCallMgr = new CallMgr(this);
+        mCallMgr = CallMgr.getInstance();
         mCallMgr.setmListener(new CallMgr.ILoadCallogFinishListener() {
             @Override
             public void onFinish() {
                 //加载数据后初始化界面
                 initView();
+                registerBroadcast();
+                startNotifyService();
             }
         });
+        mCallMgr.init();
         //授权
         getPersimmionInfo();
     }
 
 
+    public void registerBroadcast(){
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Constant.TEST_NOTIFY);
+        registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (action.equals(Constant.TEST_NOTIFY)){
+                    mAapter.notifyDataSetChanged();
+                }
+            }
+        },filter);
+    }
 
 
     public void initView() {
 
         mAapter = new ContactsAdapter(mCallMgr.mContacts);
-        RecyclerView recyclerView_peoples= findViewById(R.id.recycler_contacts);
+        recyclerView_peoples= findViewById(R.id.recycler_contacts);
         LinearLayoutManager leftllm = new LinearLayoutManager(this);
         leftllm.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView_peoples.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
@@ -224,5 +245,12 @@ public class MainActivity extends AppCompatActivity {
             mCallMgr.init();
         }
 
+    }
+
+    //启动通知服务
+    public void startNotifyService(){
+          Intent intent = new Intent();
+          intent.setClass(this, NotifyService.class);
+          startService(intent);
     }
 }
