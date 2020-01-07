@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<group android:checkableBehavior="single">
+    <item
+        android:id="@+id/nav_remind"
+        android:icon="@drawable/nav_remind"
+        android:title="提醒"/>
+    <item
+        android:id="@+id/nav_role"
+        android:icon="@drawable/nav_role"
+        android:title="角色"/>
+    <item
+        android:id="@+id/nav_statistics"
+        android:icon="@drawable/nav_statistics"
+        android:title="统计"/>
+
+</group>
+</menu>

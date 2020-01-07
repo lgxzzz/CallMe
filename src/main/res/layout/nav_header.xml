@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="170dp"
+    android:padding="10dp"
+    android:background="?attr/colorPrimary">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/icon_image"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:src="@drawable/nav_icon"
+        android:layout_centerInParent="true"/>
+
+    <TextView
+        android:id="@+id/sign"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="黎明将至，春宵苦短"
+        android:textColor="#333333"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/sign"
+        android:text="喵喵喵喵咪呀"
+        android:textColor="#333333"
+        android:textSize="14sp"/>
+
+
+</RelativeLayout>
